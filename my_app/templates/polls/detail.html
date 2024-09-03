@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+    <title>{{ poll.title }}</title>
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <div class="detail-container">
+
+        {% if user == poll.user %}
+            <form method="post" class="detail-poll-title" action="{% url 'edit-poll' poll.id %}" autocomplete="off">
+                {% csrf_token %}
+                {{ poll_form.title }}
+                <button type="submit" id="save-button" style="display: none;">Edit title?</button>
+            </form>
+        {% else %}
+            <h1 class="guest-poll-title">{{ poll.title }}</h1>
+        {% endif %}
+
+        <div class="voting-container">
+            <form id="submit-vote-form" method="post" class="" action="{% url 'submit-vote' poll.id %}" autocomplete="off">
+                {% csrf_token %}
+                <input type="hidden" name="choice" id="selected-choice">
+
+                {% for choice in choices %}
+                    <div class="choice-container">
+                        <div id="{{ choice.id }}" class="percentage-bar" style="width: 0;">
+                            <a class="listed-choice" href="#" onclick="doVote({{ choice.id }}, {{ choice.votes }})">
+                                {{ choice.text }}
+                            </a>
+                        </div>
+                        <div class="vote-counter-container">
+                            {% if previous_choice %}
+                                {% if choice.id == previous_choice.id %}
+                                    <img class="check-mark" src="{% static 'images/new-green-check-mark.png' %}">
+                                {% endif %}
+                            {% endif %}
+                            <p class="vote-counter">{{ choice.votes }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </form>
+        
+            {% if user == poll.user or editing_allowed == True %}
+                <form method="post" class="choice-form" action="{% url 'create-choice' poll.id %}" autocomplete="off">
+                    {% csrf_token %}
+                    {{ choice_form.text }}
+                    <button type="submit" class="">Add</button>
+                </form>
+            {% endif %}
+        </div>
+
+        {% if user == poll.user %}
+            <h1 class="host-box-title">Host settings:</h1>
+            <div class="host-container">
+
+                    <div class="host-buttons">
+                        <form method="post" class="" action="{% url 'toggle-public' poll.id %}" autocomplete="off">
+                            {% csrf_token %}
+                            <button type="submit" id="toggle-public-button">toggle public</button>
+                        </form>
+
+                        <form method="post" class="" action="{% url 'toggle-editing' poll.id %}" autocomplete="off">
+                            {% csrf_token %}
+                            <button type="submit" id="toggle-editing-button"></button>
+                        </form>
+
+                        <form method="post" class="" action="{% url 'delete-poll' poll.id %}" autocomplete="off">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-button">Delete Poll</button>
+                        </form>
+                    </div>
+            </div>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            <h1 style="margin: 120px 0px 0px 0px;">Post Comment</h1>
+            <form method="post" class="" action="{% url 'create-comment' poll.id %}" autocomplete="off">
+                {% csrf_token %}
+                <div class="comment-form-container">
+                    {{ comment_form.as_p }}
+                    <button type="submit" class="comment-submit-button">Post</button>
+                </div>
+            </form>
+        {% else %}
+            {% if comments %}
+                <h1 style="margin: 200px 0px 0px 0px;">Comments</h1>
+            {% endif %}
+        {% endif %}
+
+        <div>
+            {% for comment in comments %}
+                <div class="comment-container">
+                    <p class="comment-item-username">{{ comment.user.username }}</p>
+                    <p class="comment-item-text">{{ comment.text }}</p>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <script>
+        const totalVotes = {{ total_votes|default:0 }};
+        const is_public = {{ is_public|lower }};
+        const editing_allowed = {{ editing_allowed|lower }};
+
+        document.addEventListener("DOMContentLoaded", function() {
+            loadPercentageBars();
+            editTitle();
+            togglePublicButton(is_public);
+            toggleEditingButton(editing_allowed);
+        });
+
+        function loadPercentageBars() {
+            {% for choice in choices %}
+                moveProgress(totalVotes > 0 ? ({{ choice.votes }} * 100 / totalVotes) : 0, "{{ choice.id }}");
+            {% endfor %}
+        }
+
+        function editTitle() {
+            try {
+                const inputField = document.getElementById('poll-title');
+                const saveButton = document.getElementById('save-button');
+                const originalValue = inputField.value;
+            
+                inputField.addEventListener('input', function() {
+                    if (inputField.value !== originalValue) {
+                        saveButton.style.display = 'block';
+                    } else {
+                        saveButton.style.display = 'none';
+                    }
+                });
+            } catch (error) {
+            }
+        }
+
+        function moveProgress(percent, choiceId) {
+            let bar = document.getElementById(choiceId);
+            let width = 0;
+            let id = setInterval(frame, 10)
+            function frame() {
+                if (width >= percent) {
+                    clearInterval(id);
+                } else {
+                    width++; 
+                    bar.style.width = width + '%'; 
+                }
+            }
+        }
+
+        function doVote(choiceId, choiceVotes) {
+            document.getElementById('selected-choice').value = choiceId;
+            document.getElementById('submit-vote-form').submit();
+            return false;
+        }
+        
+        function togglePublicButton(is_public) {
+            let button = document.getElementById('toggle-public-button');
+            
+            if (is_public) {
+                button.style.backgroundColor = 'green';
+                button.style.color = 'white';
+                button.textContent = 'Published!'
+            } else {
+                button.style.backgroundColor = 'lightgrey';
+                button.textContent = 'Make public?'
+                button.style.color = 'red'
+            }
+        }
+
+        function toggleEditingButton(editing_allowed) {
+            let button = document.getElementById('toggle-editing-button');
+            
+            if (editing_allowed) {
+                button.style.backgroundColor = 'green';
+                button.style.color = 'white';
+                button.textContent = 'Edit Allowed'
+            } else {
+                button.style.backgroundColor = 'lightgrey';
+                button.textContent = 'Editing Off'
+                button.style.color = 'red'
+            }
+        }
+    </script>
+
+{% endblock %}

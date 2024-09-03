@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+    <title>Create Poll</title>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}" />
+{% endblock %}
+
+{% block content %}
+    <h1>{{ profile_user.username}}</h1>
+
+    <div class="poll-list">
+        {% if is_user %}
+            {% for poll in profile_user.poll_set.all %}
+                <a href="{% url 'poll-detail' pk=poll.id %}">
+                    <div class="poll-container">
+                        {{poll.title}}
+                        <p class="tiny-username">by {{poll.user.username}}</p>
+                    </div>
+                </a>
+            {% endfor %}
+        {% else %}
+            {% for poll in profile_user.poll_set.all %}
+                {% if poll.isPublic == True%}
+                    <a href="{% url 'poll-detail' pk=poll.id %}">
+                        <div class="poll-container">
+                            {{poll.title}}
+                            <p class="tiny-username">by {{poll.user.username}}</p>
+                        </div>
+                    </a>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

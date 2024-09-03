@@ -1,0 +1,63 @@
+.home-poll-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.home-poll-form input {
+    text-align: center;
+}
+
+.poll-input {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 50px;
+    padding: 10px;
+    box-sizing: border-box;
+    margin: 50px;
+}
+
+.poll-input:focus::placeholder {
+    opacity: 0;
+}
+
+.poll-list ul {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    list-style-type: none;
+}
+
+.poll-container {
+    position: relative;
+    background-color: #fbfbfb;
+    padding: 20px;
+    margin: 10px;
+    border: 1px solid #404040;
+    width: 400px;
+    height: 100px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 12px;
+}
+
+.poll-list a {
+    color: black;
+    text-decoration: none;
+    font-size: 24px;
+    margin: 20px;
+}
+
+.tiny-username {
+    position: absolute;
+    font-size: 14px;
+    color: lightgrey;
+    bottom: 0px;
+    right: 20px;
+}

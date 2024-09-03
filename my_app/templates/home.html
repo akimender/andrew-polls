@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+    <title>Create Poll</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+    {% if user.is_authenticated %}
+        <form method="post" class="home-poll-form" autocomplete="off">
+            {% csrf_token %}
+            {{ poll_form.title }}
+            <button type="submit" class="btn submit">Create Poll</button>
+        </form>
+    {% else %}
+        <br>
+        <br>
+        <br>
+    {% endif %}
+
+    <div class="poll-list">
+        <div>
+            <ul>
+                {% for poll in polls %}
+                    {% if poll.isPublic == True %}
+                        <a href="{% url 'poll-detail' pk=poll.id %}">
+                            <div class="poll-container">
+                                {{poll.title}}
+                                <p class="tiny-username">by {{poll.user.username}}</p>
+                            </div>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+{% endblock %}

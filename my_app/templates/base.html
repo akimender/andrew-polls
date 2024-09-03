@@ -1,0 +1,66 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+    <div class='nav-bar-container'>
+        <header>
+            <nav class="nav-bar">
+                {% if user.is_authenticated %}
+                    <ul>
+                        <li>
+                            <a href="/">
+                            Home
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'profile' username=user.username %}">
+                                My Polls
+                            </a>
+                        </li>
+                        <li>
+                            <form id="logout-form" method="post" action="{% url 'logout' %}"?>
+                                {% csrf_token %}
+                                <a href="" onclick="document.getElementById('logout-form').submit(); return false;">Log out</a>
+                            </form>
+                        </li>
+                    </ul>
+                    <h2 class="username-indicator">logged in as {{ user.username }}</h2>
+                {% else %}
+                    <ul>
+                        <li>
+                            <a href="/">
+                            Home
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'login' %}">
+                                Login
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'signup' %}">
+                                Sign up
+                            </a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </nav>
+        </header>
+    </div>
+
+    <div class="main-container">
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html>

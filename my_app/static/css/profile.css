@@ -1,0 +1,38 @@
+.poll-list ul {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    list-style-type: none;
+}
+
+.poll-list a {
+    color: black;
+    text-decoration: none;
+    font-size: 24px;
+    margin: 20px;
+}
+
+.poll-container {
+    position: relative;
+    background-color: #fbfbfb;
+    padding: 20px;
+    margin: 10px;
+    border: 1px solid #404040;
+    width: 400px;
+    height: 100px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 12px;
+}
+
+.tiny-username {
+    position: absolute;
+    font-size: 14px;
+    color: lightgrey;
+    bottom: 0px;
+    right: 20px;
+}
