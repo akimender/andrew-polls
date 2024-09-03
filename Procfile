@@ -1,1 +1,1 @@
-web: gunicorn pollsweb.pollsweb.wsgi
+web: gunicorn pollsweb.wsgi
